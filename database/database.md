@@ -17,7 +17,10 @@
 - Durability: Transaction이 완료되면 결과가 영구적으로 적용되는 것을 보장한다.
 
 ```
-ACID원칙은 완벽히 지켜지지 않는다. 왜냐하면 ACID원칙을 지키면 동시성이 떨어지게 되기 때문이다. 그렇기 때문에 Transaction은 Isolation level을 제공한다. Isolation level은 `READ UNCOMMITED`, `READ COMMITED`, `REPEATABLE READ`, `SERIALIZABLE` 등이 있다. ACID 원칙을 덜 지킬수록 문제가 발생할 부분이 증하지만 동시성을 높일 수있다.
+ACID원칙은 완벽히 지켜지지 않는다. 왜냐하면 ACID원칙을 지키면 동시성이 떨어지게 되기 때문이다. 
+그렇기 때문에 Transaction은 Isolation level을 제공한다. Isolation level은 
+`READ UNCOMMITED`, `READ COMMITED`, `REPEATABLE READ`, `SERIALIZABLE` 등이 있다. 
+ACID 원칙을 덜 지킬수록 문제가 발생할 부분이 증하지만 동시성을 높일 수있다.
 ```
 
 
