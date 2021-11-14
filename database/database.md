@@ -89,11 +89,23 @@ InnoDB는 SQL:1992의 모든 transaction isolation level을 지원한다. `READ 
 
 - `READ COMMITED`
 
-  
+  같은 transaction에 있더라도 각각의 consistent read를 한다. sets과 reads에 snapshot 다시 만든다.
 
+  Locking reads (`SELECT` with `FOR UPDATE` or `FOR SHARE`), UPDATE, DELETE 상태일때 InnoDB는 index records에만 lock을 건다. 때문에 새로운 record를 추가하는데 자유롭다. Gap locking은 오직 foreign-key constraint checking, duplicate-key checking에만 걸린다.
 
+  Gap locking이 안돼기 때문에 phantom row 문제가 발생할 수 있다. 만약 gap에 다른 transaction에서 삽입을 하면 해당 row는 phantom rows가 된다.
 
+  ```
+  phantom row는 만약 트렌젝션안에서 두번에 select가 있을때 다른 트랜젝션이 첫번째 select이후 insert가 되면 두번째 select에서 insert된 row가 조회된다. 이는 isolation 원칙을 위반하게 된다.
+  ```
 
+- `READ UNCOMMITED`
+
+  select 상태에서 lock을 걸지 않고 사용할 수 있다. 하지만 이전 버전의 row가 사용된 상태이여만 가능하다. 따라서 이 isolation에서는 읽기에 대해서 일괄적이지 못하다. 이걸 dirty read라고도 한다. 다른건 `READ COMMITED`와 같다.
+
+- `SERIALIZABLE`
+
+  기본적으로 `REPEATABLE READ` 와 같다. 하지만 InnoDB는 `autocommit`을 끄면 모든 select에 대해서 `SELECT... for share`로 변경하게 할 수 있다. 때문에 트랜젝션안에서 read를 했을때 `select ... for share`로 변경되어 s lock을 걸게 되고 다른 트랜젝션에서 update, delete를 할 수 없게 된다.
 
 
 
