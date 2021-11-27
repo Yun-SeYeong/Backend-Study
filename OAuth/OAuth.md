@@ -29,7 +29,11 @@
 
 #### 2. Implicit Grant
 
+> 자격증명을 안전하게 저장하기 힘든 클라이언트에서 최적화된 방식이다.
+
 ![image2](./image2.png)
+
+
 
 #### 3. Resource Owner Password Credentials Grant
 
