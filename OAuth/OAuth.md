@@ -29,16 +29,22 @@
 
 #### 2. Implicit Grant
 
-> 자격증명을 안전하게 저장하기 힘든 클라이언트에서 최적화된 방식이다.
+> 자격증명을 안전하게 저장하기 힘든 클라이언트에서 최적화된 방식이다. 권한 부여 승인 코드 없이 바로 Access Token이 발급된다. Refresh Token을 사용할 수 없다. 
 
 ![image2](./image2.png)
+
+권한 부여 승인 요청시 response_type을 token으로 설정하여 요청한다. 이후 클라이언트는 로그인 페이지를 제공받아 로그인을 하게 되고 Access Token을 전달하게 된다. 이후 Access Token을 사용하여 Resource Server에 접근하게 된다.
 
 
 
 #### 3. Resource Owner Password Credentials Grant
 
+> 클라이언트가 username과 password를 Authorization Server에 토근을 요청하는 방식이다. 클라이언트가 외부에 노출되면 안된다. Refresh Token 사용은 가능하다.
+
 ![image3](./image3.png)
 
 #### 4. Client Credentials Grant
+
+> OAuth2에서 지원하는 방식중 가장 간단한 방법으로 안전한 클라이언트에만 적용할 수 있어야한다.
 
 ![image4](./image4.png)
