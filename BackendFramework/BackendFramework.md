@@ -60,3 +60,42 @@ AOP는 Aspect Oriented Programming의 약자로 관점 지향 프로그래밍이
 
 
 
+### Spring MVC Request LifeCycle
+
+
+
+![image1](./image1.png)
+
+
+
+#### Filter
+
+- Web Application의 전역적인 로직을 담당한다.
+- DispatcherServlet에 들어가기 전에 필터링을 한다.
+
+
+
+#### DispatcherServlet
+
+- 모든 Request에 대해 우선적으로 처리해주는 서블릿이다.
+- HandlerMapping에게 Request에 대해 매핑할 Controller검색을 요청한다.
+- 검색된 Controller에 Request를 전달한다.
+- Dispatcher 라는 이름에 맞게 필요한 Controller와 매핑 시키는 역활을 한다.
+
+
+
+#### HandlerMapping
+
+- 검색 요청 받은 Controller를 찾아 준다.
+
+
+
+#### HandlerInterceptor
+
+- Request가 검색된 Controller와 매핑 되기 전에 부가적인 로직을 추가할 수 있다.
+
+
+
+#### ViewResolver
+
+- Controller에서 반환한 View의 이름을 통해 View를 렌더링한다.
