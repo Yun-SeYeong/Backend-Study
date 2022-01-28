@@ -12,3 +12,5 @@
 4. [Go](./go/go.md)
 5. [OAuth](./OAuth/OAuth.md)
 5. [BlockChain](./blockchain/blockchain.md)
+
+7. [Kafka](./kafka/kafka.md)
