@@ -2,14 +2,9 @@
 
 > Database에 필요한 지식 정리
 
-
-
 ## 1. Transaction
 
 > Transaction이란, 데이터베이스를 조작하는 작업의 단위이다. 조회 와 수정을 하나의 행위로 묶는 등 한가지 이상의 행위를 묶어 하나의 단위로 표현한다. Transaction은 흔히 ACID원칙을 보장해야 한다고 한다. ACID는 각각 Atomicity(원자성), Consistency(일관성), Isolation(독립성), Durability(영구성)을 뜻한다.
-
-
-
 
 - Atomicity: transaction의 작업이 부분적으로 성공하는 일이 없도록 하는 성질이다.
 - Consistency: transaction이 끝나고 나면 DB의 제약조건이 맞도록 보장하는 성질이다.
@@ -23,17 +18,9 @@ ACID원칙은 완벽히 지켜지지 않는다. 왜냐하면 ACID원칙을 지�
 ACID 원칙을 덜 지킬수록 문제가 발생할 부분이 증하지만 동시성을 높일 수있다.
 ```
 
-
-
-
-
-
-
 ## 1. InnoDB
 
 > InnoDB는 MYSQL을 위한 데이터베이스 엔진이다. ACID 호환 트렌젝션에 대응하고, 외래 키도 지원하고 있다. 
-
-
 
 #### Row-level lock
 
@@ -49,71 +36,64 @@ InnoDB는 두개의 row-level locking을 사용한는데 shared(s) locks 와 exc
 
 만약 `t1`에 row `r`에 x lock을 걸고 있다면,  `t2`에서는 s lock과 x lock 모두 걸 수 없다.
 
-
-
 #### Intension Locks
 
 InnoDB는 row locks와 table locks가 공존하여 사용하기 위해 multiple granularity locking을 지원한다.
 
 
 
+- intension shared lock(IS) : 해당 테이블의 Row에 IS Lock을 걸게 되고 상위 노드인 해당 테이블 또한 락이 걸리게 된다.
+- intension exclusive lock(IX) : 해당 테이블의 Row에 IX Lock을 걸게되고 상위 노드인 해당 테이블 또한 락이 걸리게 된다.
+
+|     | X        | IX         | S          | IS         |
+| --- | -------- | ---------- | ---------- | ---------- |
+| X   | Conflict | Conflict   | Conflict   | Conflict   |
+| IX  | Conflict | Compatible | Conflict   | Compatible |
+| S   | Conflict | Conflict   | Compatible | Compatible |
+| IS  | Conflict | Compatible | Compatible | Compatible |
+
+
+
 #### Record Locks
+
 Record lock은 index records에 걸리게 된다. 만약 `select c1 from t where c1 = 10 for update;` 일때 다른 transaction에서 해당 row에 삽입, 수정, 삭제르 할 수 없도록 막는다. 만약 index가 없는 테이블도 무조건 index records에 record lock을 걸게 되는데 InnoDB 같은 경우에는 clustered index가 자동으로 생성되는데 이걸 통해 record lock을 걸게 된다.
-
-
 
 #### Gap Locks
 
 Gap lock은 조건 사이에 있는 index records에 걸게된다.  만약 `SELECT c1 FROM t WHERE c1 BETWEEN 10 and 20 FOR UPDATE;` 를 실행하면 다른 트렌젝션에서 t.c1이 15에 값을 넣는 것을 막아준다. 이는 해당 하는 부분에 값이 없어도 막악준다. 왜냐하면 gap lock은 해당범위에 lock을 걸기때문이다. gap은 single index value, multiple index value에 적용되고, 만약 index가 없더라도 적용된다.
 
-
-
-
-
-
-
 #### Transaction Isolation Level
 
 InnoDB는 SQL:1992의 모든 transaction isolation level을 지원한다. `READ UNCOMMITED`, `READ COMMITED`, `REPEATABLE READ`, `SERIALIZABLE` 이 있다. 기본적으로 InnoDB는 `REPEATABLE READ`가 설정되어있다.
 
-
-
 - `REPEATABLE READ`
-
+  
   InnoDB의 Default 설정이다. 만약 같은 trasaction에서 여러 consistent read를 하게되면 첫번째로 완료된 snapshot을 읽게된다. 
-
+  
   Locking reads (`SELECT` with `FOR UPDATE` or `FOR SHARE`), UPDATE, DELETE 상태일때 unique index에 대해 찾거나 range-type (범위로) 찾는냐에 따라 달라지게 된다.
-
+  
   - Unique index를 통해 찾게되면, InnoDB는 해당 index record에만 lock을 걸게된다.
   - 외에 다른 상황에서 InnoDB는 모두 range로 찾게 된다. 이때 걸리는 락은 gap lock또는 next-key lock을 사용하게 된다.
 
 - `READ COMMITED`
-
+  
   같은 transaction에 있더라도 각각의 consistent read를 한다. sets과 reads에 snapshot 다시 만든다.
-
+  
   Locking reads (`SELECT` with `FOR UPDATE` or `FOR SHARE`), UPDATE, DELETE 상태일때 InnoDB는 index records에만 lock을 건다. 때문에 새로운 record를 추가하는데 자유롭다. Gap locking은 오직 foreign-key constraint checking, duplicate-key checking에만 걸린다.
-
+  
   Gap locking이 안돼기 때문에 phantom row 문제가 발생할 수 있다. 만약 gap에 다른 transaction에서 삽입을 하면 해당 row는 phantom rows가 된다.
-
+  
   ```
   phantom row는 만약 트렌젝션안에서 두번에 select가 있을때 다른 트랜젝션이 첫번째 select이후 insert가 되면 두번째 select에서 insert된 row가 조회된다. 이는 isolation 원칙을 위반하게 된다.
   ```
 
 - `READ UNCOMMITED`
-
+  
   select 상태에서 lock을 걸지 않고 사용할 수 있다. 하지만 이전 버전의 row가 사용된 상태이여만 가능하다. 따라서 이 isolation에서는 읽기에 대해서 일괄적이지 못하다. 이걸 dirty read라고도 한다. 다른건 `READ COMMITED`와 같다.
 
 - `SERIALIZABLE`
-
+  
   기본적으로 `REPEATABLE READ` 와 같다. 하지만 InnoDB는 `autocommit`을 끄면 모든 select에 대해서 `SELECT... for share`로 변경하게 할 수 있다. 때문에 트랜젝션안에서 read를 했을때 `select ... for share`로 변경되어 s lock을 걸게 되고 다른 트랜젝션에서 update, delete를 할 수 없게 된다.
-
-
-
-
-
-
-
-
 
 reference
 
