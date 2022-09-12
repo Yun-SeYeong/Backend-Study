@@ -30,8 +30,12 @@ Database를 분리하여 서버와 Database가 동시에 장애가 발생하는 
 
 데이터베이스가 분리된 웹서비스에서 백엔드가 모든 데이터베이스에 쓰는 구조로 한다. 이 방법은 수평 스케일링에 가까워 졌다고 볼 수 있다. 장애가 발생하여도 데이터를 읽을 수 있고 트래픽의 분산도 할 수 있다.
 
-
-
 ### Horizontal Scaling of Databsases: Sharding
 
-dfd
+![](/Users/yunseyeong/Documents/workspace/intellij/Backend-Study/system-design/1.png)
+
+대략적인 현대의 확장 가능한 데이터베이스 설계는 위 구조이다. 기본적으로 위 Router 같은 것을 통해 데이터를 어떤 샤드에 저장할지 결정하고 각 샤드에 분산하여 저장한다. 각 샤드는 하나 이상의 백업을 가질 수 있다. 따라서 수직, 수평 스케일링의 장점을 모두 가져온 것이다. 만약 샤드가 죽어도 각 샤드의 백업으로 대체할 수 있고 데이터 또한 해쉬알고리즘을 통해 분산하여 저장하게 된다. 
+
+### More Specific Example: MongoDB
+
+Mongo DB는 기본적으로 비관계 데이터베이스로 NoSQL기반이다.
