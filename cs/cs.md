@@ -42,8 +42,6 @@ OSI 7계층은 네트워크 통신중 일어나는 과정을 7단계로 나눈 �
 
 HTTP, FTP, SMTP, POP3, IMAP, Telnet 등의 프로토콜이 있다. 응용 서비스를 수행한다.
 
-
-
 # 면접질문 정리
 
 ## 1. [https://www.google.com을](https://www.google.com%EC%9D%84) 접속할 때 일어나는 일
